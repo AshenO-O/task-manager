@@ -2,7 +2,7 @@
 
 function TaskList() {
     const tasks = [
-        { id: 1, title: "Lear React", completed: false},
+        { id: 1, title: "Learn React", completed: false},
         { id: 2, title: "Building task manager", completed: false},
         { id: 3, title: "Connect to Spring Boot", completed: false},
     ];
