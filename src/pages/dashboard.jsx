@@ -37,6 +37,21 @@ function Dashboard() {
     setTasks(remainingTasks);
   };     
 
+  // Toggle task completion status
+  
+  const toggleComplete = (idToToggle) => {            
+    const updatedTasks = tasks.map((task) => {         // map() creates a new array where we change only the clicked task
+      if (task.id === idToToggle) {
+        // This is the task we clicked - flip its completed value
+        return { ...task, completed: !task.completed };
+      } else {
+        // Not the clicked task - leave it unchanged
+        return task;
+      }
+    });
+    setTasks(updatedTasks);
+  };
+
   return (
     <div className="dashboard">
       <h1>Dashboard</h1>
@@ -59,7 +74,15 @@ function Dashboard() {
       <ul>
         {tasks.map((task) => (
           <li key={task.id}>
-            {task.title}
+            <input
+              type="checkbox"
+              checked={task.completed}
+              onChange={() => toggleComplete(task.id)}
+            />
+            <span style={{ textDecoration: task.completed ? 'line-through' : 'none', color: task.completed ? 'gray' : 'black' }}> 
+                {task.title}
+            </span>
+
             <button onClick={() => deleteTask(task.id)}>Delete</button>
           </li>
         ))}
