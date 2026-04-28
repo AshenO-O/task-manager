@@ -30,6 +30,13 @@ function Dashboard() {
     setNewTaskTitle('');
   };
 
+  // Delete a task
+  
+  const deleteTask = (idToDelete) => {
+    const remainingTasks = tasks.filter((task) => task.id !== idToDelete);    // filter() creates a new array WITHOUT the task we want to delete
+    setTasks(remainingTasks);
+  };     
+
   return (
     <div className="dashboard">
       <h1>Dashboard</h1>
@@ -46,7 +53,6 @@ function Dashboard() {
         <button onClick={addTask}>Add Task</button>
       </div>
       
-      {/* Display task count */}
       <p>You have {tasks.length} tasks</p>
       
       {/* Task List */}
@@ -54,6 +60,7 @@ function Dashboard() {
         {tasks.map((task) => (
           <li key={task.id}>
             {task.title}
+            <button onClick={() => deleteTask(task.id)}>Delete</button>
           </li>
         ))}
       </ul>
