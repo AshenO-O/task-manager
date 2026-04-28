@@ -6,7 +6,9 @@ function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // TODO: Connect to backend later
+    
+    // hv to connect to the backend 
+
     console.log('Login:', { email, password });
     alert('Login successful! (Demo)');
   };
