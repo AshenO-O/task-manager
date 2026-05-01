@@ -5,6 +5,9 @@ import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <BrowserRouter>  // Wrap the entire app in BrowserRouter to enable routing (to navigate between pages)
+      <App />
+    </BrowserRouter>
     <App />
   </StrictMode>,
 )
