@@ -16,7 +16,10 @@ function App() {
           <Link to="/settings">Settings</Link>
         </div>
       </nav>
-      <Routes> // Define routes for different pages
+
+// Define routes for different pages
+
+      <Routes> 
         <Route path="/" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} /> 
@@ -25,3 +28,5 @@ function App() {
     </div>
   );
 }
+
+export default App;
