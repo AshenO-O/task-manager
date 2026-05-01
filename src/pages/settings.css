@@ -1,0 +1,141 @@
+/* ========================================
+   SETTINGS PAGE STYLES
+   ======================================== */
+
+.settings-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.settings-container h1 {
+  color: white;
+  text-align: left;
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+}
+
+.settings-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+/* Settings Sections */
+.settings-section {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.settings-section h2 {
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+  font-size: 1.3rem;
+}
+
+.section-desc {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.75rem;
+}
+
+/* Form inputs in settings */
+.settings-section .input-group {
+  margin-bottom: 1.25rem;
+}
+
+.settings-section .input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #374151;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.settings-section .input-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.settings-section .input-group input:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+/* Theme Options */
+.theme-options {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.theme-option {
+  flex: 1;
+  min-width: 150px;
+  cursor: pointer;
+}
+
+.theme-option input {
+  display: none;
+}
+
+.theme-preview {
+  padding: 1.25rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.theme-option.selected .theme-preview {
+  border-color: #6366f1;
+  background: #eef2ff;
+}
+
+.theme-preview:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.light-preview {
+  background: #ffffff;
+  color: #1f2937;
+}
+
+.dark-preview {
+  background: #1f2937;
+  color: #ffffff;
+}
+
+.theme-preview span {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.theme-preview small {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.theme-message {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f3f4f6;
+  border-radius: 8px;
+  text-align: center;
+  color: #4b5563;
+  font-size: 0.875rem;
+}
