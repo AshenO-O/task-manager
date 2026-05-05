@@ -1,4 +1,3 @@
-/* Reset & Base */
 * {
   margin: 0;
   padding: 0;
@@ -7,28 +6,23 @@
 
 body {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #26134b 0%, #58139d 100%);
+  background: var(--bg);
   min-height: 100vh;
 }
 
-.app {
-  min-height: 100vh;
-}
-
-/* Common Navbar */
-
+/* Navigation Bar */
 .navbar {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid var(--border);
 }
 
 .nav-brand {
-  color: white;
+  color: var(--primary);
   font-size: 1.5rem;
   font-weight: bold;
 }
@@ -39,38 +33,38 @@ body {
 }
 
 .nav-links a {
-  color: white;
+  color: var(--foreground);
   text-decoration: none;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .nav-links a:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--surface-strong);
+  color: var(--accent);
 }
 
-/* Common Button styles */
-
+/* Common Button Styles */
 .btn-primary {
   width: 100%;
   padding: 0.75rem;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: var(--accent);
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: background 0.2s;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
 }
 
-/* common form styles */
-
+/* Common Form Styles */
 .input-group {
   margin-bottom: 1.5rem;
 }
@@ -78,31 +72,32 @@ body {
 .input-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #374151;
+  color: var(--muted-foreground);
   font-weight: 500;
 }
 
 .input-group input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 1rem;
+  color: var(--text);
+  background: var(--surface);
   transition: border-color 0.2s;
 }
 
 .input-group input:focus {
   outline: none;
-  border-color: #6366f1;
+  border-color: var(--ring);
 }
 
 /* Divider */
-
 .divider {
   text-align: center;
   margin: 1.5rem 0;
   position: relative;
-  color: #9ca3af;
+  color: var(--muted-foreground);
 }
 
 .divider::before,
@@ -112,7 +107,7 @@ body {
   top: 50%;
   width: 45%;
   height: 1px;
-  background: #e5e7eb;
+  background: var(--border);
 }
 
 .divider::before {

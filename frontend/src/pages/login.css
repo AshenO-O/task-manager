@@ -1,33 +1,31 @@
-/* ========================================
-   LOGIN PAGE STYLES
-   ======================================== */
-
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 70px);
+  min-height: 100vh;
   padding: 2rem;
+  background: var(--bg);
 }
 
 .login-card {
-  background: white;
+  background: var(--card);
   border-radius: 24px;
   padding: 2.5rem;
   width: 100%;
   max-width: 450px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border);
 }
 
 .login-card h1 {
-  color: #1f2937;
+  color: var(--text-h);
   text-align: center;
   margin-bottom: 0.5rem;
   font-size: 2rem;
 }
 
 .login-card > p {
-  color: #6b7280;
+  color: var(--text);
   text-align: center;
   margin-bottom: 2rem;
 }
@@ -41,26 +39,27 @@
 .btn-social {
   flex: 1;
   padding: 0.75rem;
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .btn-social:hover {
-  background: #e5e7eb;
+  background: var(--muted);
+  border-color: var(--primary);
 }
 
 .signup-link {
   text-align: center;
-  color: #6b7280;
+  color: var(--text);
   margin-top: 1rem;
 }
 
 .signup-link a {
-  color: #6366f1;
+  color: var(--primary);
   text-decoration: none;
 }
 

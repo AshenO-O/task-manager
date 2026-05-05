@@ -1,17 +1,33 @@
+// Login.jsx - Login page
+// First page users see when opening the app
+
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './login.css';
 
-function Login() {
+function Login({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
     
-    // hv to connect to the backend 
-
-    console.log('Login:', { email, password });
-    alert('Login successful! (Demo)');
+    
+    if (email && password) {
+      // Create user object
+      const userData = {
+        id: Date.now(),
+        email: email,
+        name: email.split('@')[0] // Use part before @ as name
+      };
+      
+      onLogin(userData);
+      navigate('/dashboard');
+    } else {
+      setError('Please enter email and password');
+    }
   };
 
   return (
@@ -19,6 +35,8 @@ function Login() {
       <div className="login-card">
         <h1>Welcome Back</h1>
         <p>Sign in to your account</p>
+
+        {error && <p className="error-message">{error}</p>}
 
         <form onSubmit={handleLogin}>
           <div className="input-group">

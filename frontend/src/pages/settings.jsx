@@ -1,15 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './settings.css';
 
-function Settings() {
-  const [fullName, setFullName] = useState('Ashen');
-  const [email, setEmail] = useState('induwaradissaratne@gmail.com');
+function Settings({ user, theme: initialTheme = 'light', onThemeChange, onLogout }) {
+  const [fullName, setFullName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState(initialTheme);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setTheme(initialTheme);
+  }, [initialTheme]);
 
   const handleProfileUpdate = (e) => {
     e.preventDefault();
@@ -31,6 +37,20 @@ function Settings() {
     setCurrentPassword('');
     setNewPassword('');
     setConfirmPassword('');
+  };
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+    navigate('/login');
+  };
+
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+    if (onThemeChange) {
+      onThemeChange(newTheme);
+    }
   };
 
   return (
@@ -124,7 +144,7 @@ function Settings() {
               name="theme"
               value="light"
               checked={theme === 'light'}
-              onChange={() => setTheme('light')}
+              onChange={() => handleThemeChange('light')}
             />
             <div className="theme-preview light-preview">
               <span>Light Mode</span>
@@ -138,7 +158,7 @@ function Settings() {
               name="theme"
               value="dark"
               checked={theme === 'dark'}
-              onChange={() => setTheme('dark')}
+              onChange={() => handleThemeChange('dark')}
             />
             <div className="theme-preview dark-preview">
               <span>Dark Mode</span>
@@ -150,6 +170,16 @@ function Settings() {
         <p className="theme-message">
           Current theme: {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
         </p>
+      </div>
+
+      {/* Logout Section */}
+      <div className="settings-section logout-section">
+        <h2>Session</h2>
+        <p className="section-desc">Sign out of your account</p>
+        
+        <button onClick={handleLogout} className="logout-btn">
+          Logout
+        </button>
       </div>
     </div>
   );

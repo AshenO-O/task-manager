@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './dashboard.css';
 
-function Dashboard() {  
+function Dashboard({user}) {  
   // State for storing all tasks
   const [tasks, setTasks] = useState([
     { id: 1, title: "Complete project", completed: false, priority: "high", dueDate: "2026-05-15" },
@@ -113,10 +113,10 @@ function Dashboard() {
       {/* HEADER SECTION */}
       <div className="dashboard-header">
         <h1>Dashboard</h1>
-        <p className="welcome-text">Welcome back, ashen!</p>
+        <p className="welcome-text">Welcome back, {user.name}!</p>
       </div>
 
-      {/* STATS CARDS - Shows 4 cards with task counts */}
+      {/* Shows 4 cards with task counts */}
       <div className="stats-grid">
         <div className="stat-card">
           <h3>Total Tasks</h3>
