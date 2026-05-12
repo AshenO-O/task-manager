@@ -1,29 +1,50 @@
-import { useState } from 'react';
-import './dashboard.css';
+import { useState, useEffect } from 'react';
+import { taskApi } from '../services/api';
+import './Dashboard.css';
 
-function Dashboard({user}) {  
-  // State for storing all tasks
-  const [tasks, setTasks] = useState([
-    { id: 1, title: "Complete project", completed: false, priority: "high", dueDate: "2026-05-15" },
-    { id: 2, title: "Master React", completed: false, priority: "medium", dueDate: "2026-05-10" },
-    { id: 3, title: "Review documentation", completed: true, priority: "low", dueDate: "2026-05-08" },
-  ]);
-
-  // State for the "Add Task" form inputs
-  const [newTaskTitle, setNewTaskTitle] = useState('');    
-  const [priority, setPriority] = useState('medium');      
-  const [dueDate, setDueDate] = useState('');               
-
-  // State for filtering and searching
-  const [activeFilter, setActiveFilter] = useState('all');   
-  const [searchQuery, setSearchQuery] = useState('');        
+function Dashboard({ user }) {
+  // State for all tasks
+  const [tasks, setTasks] = useState([]);
   
-  // Calculate stats - counts tasks in different categories
+  // Loading state (show spinner while fetching)
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // State for the "Add Task" form inputs
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [priority, setPriority] = useState('medium');
+  const [dueDate, setDueDate] = useState('');
+  
+  // State for filtering and searching
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // This runs when the component loads or when user changes
+  useEffect(() => {
+    if (user && user.id) {
+      loadTasks();
+    }
+  }, [user]);
+
+  // Fetch all tasks for current user from backend
+  const loadTasks = async () => {
+    setIsLoading(true);
+    try {
+      const response = await taskApi.getTasks(user.id);
+      setTasks(response.data);
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+      alert('Failed to load tasks. Make sure backend is running on port 8080');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter(task => task.completed).length;
   const pendingTasks = tasks.filter(task => !task.completed).length;
   
-  // Calculate overdue: tasks that are not completed AND due date is before today
+  // Calculate overdue: tasks not completed AND due date is before today
   const overdueTasks = tasks.filter(task => {
     if (task.completed) return false;
     const today = new Date();
@@ -35,49 +56,66 @@ function Dashboard({user}) {
 
 
   // Add a new task
-  const addTask = () => {
-    // Don't add empty tasks
+  const addTask = async () => {
     if (newTaskTitle.trim() === '') return;
     
-    // Create new task object
     const newTask = {
-      id: Date.now(),                        
       title: newTaskTitle,
       completed: false,
       priority: priority,
-      dueDate: dueDate || new Date().toISOString().split('T')[0]  // Use today if no date
+      dueDate: dueDate || new Date().toISOString().split('T')[0],
+      userId: user.id,  // Link task to current user
     };
     
-    // Add to existing tasks array
-    setTasks([...tasks, newTask]);
+    try {
+      const response = await taskApi.createTask(newTask);
+      setTasks([...tasks, response.data]);  // Add new task to state
+      
+      // Clear form
+      setNewTaskTitle('');
+      setPriority('medium');
+      setDueDate('');
+    } catch (error) {
+      console.error('Error adding task:', error);
+      alert('Failed to add task. Check if backend is running.');
+    }
+  };
+
+  // Delete a task
+  const deleteTask = async (idToDelete) => {
+    try {
+      await taskApi.deleteTask(idToDelete);
+      setTasks(tasks.filter(task => task.id !== idToDelete));
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      alert('Failed to delete task');
+    }
+  };
+
+  // Toggle task completion (checkbox click)
+  const toggleComplete = async (idToToggle) => {
+    // Find the task to update
+    const taskToUpdate = tasks.find(task => task.id === idToToggle);
+    if (!taskToUpdate) return;
     
-    // Clear the form
-    setNewTaskTitle('');
-    setPriority('medium');
-    setDueDate('');
+    // Create updated task with flipped completed status
+    const updatedTask = {
+      ...taskToUpdate,
+      completed: !taskToUpdate.completed,
+    };
+    
+    try {
+      await taskApi.updateTask(idToToggle, updatedTask);
+      // Update local state
+      setTasks(tasks.map(task =>
+        task.id === idToToggle ? updatedTask : task
+      ));
+    } catch (error) {
+      console.error('Error updating task:', error);
+      alert('Failed to update task');
+    }
   };
 
-  // Delete a task by its ID
-  const deleteTask = (idToDelete) => {
-    const remainingTasks = tasks.filter(task => task.id !== idToDelete);
-    setTasks(remainingTasks);
-  };
-
-  // Toggle task completion
-  const toggleComplete = (idToToggle) => {
-    const updatedTasks = tasks.map(task => {
-      if (task.id === idToToggle) {
-        // Flip the completed value: true becomes false, false becomes true
-        return { ...task, completed: !task.completed };
-      }
-      return task;
-    });
-    setTasks(updatedTasks);
-  };
-
-  // ========== FILTERING LOGIC ==========
-
-  // First, filter by status (All, Active, Completed, Overdue)
   let filteredByStatus = tasks;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -95,17 +133,28 @@ function Dashboard({user}) {
     });
   }
 
-  // Then, filter by search query
+  // Filter by search query
   const filteredTasks = filteredByStatus.filter(task =>
     task.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Priority badge color helper
   const getPriorityClass = (priority) => {
     if (priority === 'high') return 'priority-high';
     if (priority === 'medium') return 'priority-medium';
     return 'priority-low';
   };
 
+  if (isLoading) {
+    return (
+      <div className="dashboard">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading your tasks...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard">
@@ -113,10 +162,10 @@ function Dashboard({user}) {
       {/* HEADER SECTION */}
       <div className="dashboard-header">
         <h1>Dashboard</h1>
-        <p className="welcome-text">Welcome back, {user.name}!</p>
+        <p className="welcome-text">Welcome back, {user?.name || 'User'}!</p>
       </div>
 
-      {/* Shows 4 cards with task counts */}
+      {/* STATS CARDS */}
       <div className="stats-grid">
         <div className="stat-card">
           <h3>Total Tasks</h3>
@@ -200,7 +249,7 @@ function Dashboard({user}) {
         </button>
       </div>
 
-      {/* TASK LIST - Shows all filtered tasks */}
+      {/* TASK LIST */}
       <div className="task-list-container">
         {filteredTasks.length === 0 ? (
           <div className="empty-state">
@@ -210,25 +259,16 @@ function Dashboard({user}) {
         ) : (
           filteredTasks.map(task => (
             <div key={task.id} className={`task-card ${task.completed ? 'completed' : ''}`}>
-              {/* Checkbox */}
               <input
                 type="checkbox"
                 checked={task.completed}
                 onChange={() => toggleComplete(task.id)}
               />
-              
-              {/* Task Title */}
               <span className="task-title">{task.title}</span>
-              
-              {/* Priority Badge */}
               <span className={`priority-badge ${getPriorityClass(task.priority)}`}>
                 {task.priority}
               </span>
-              
-              {/* Due Date */}
               <span className="due-date">📅 {task.dueDate}</span>
-              
-              {/* Delete Button */}
               <button className="delete-btn" onClick={() => deleteTask(task.id)}>
                 Delete
               </button>

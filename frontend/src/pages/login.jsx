@@ -1,33 +1,49 @@
-// Login.jsx - Login page
-// First page users see when opening the app
+// Login.jsx - Login page with demo authentication
+// For now, we use demo accounts. Later we'll add real backend auth.
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './login.css';
+import './Login.css';
+
+// Demo users 
+const DEMO_USERS = [
+  { id: "1", email: "ashen@example.com", password: "123456", name: "Ashen" },
+  { id: "2", email: "demo@example.com", password: "123456", name: "Demo User" },
+];
 
 function Login({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    
-    
-    if (email && password) {
-      // Create user object
+    setIsLoading(true);
+    setError('');
+
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Find user in demo list
+    const user = DEMO_USERS.find(u => u.email === email && u.password === password);
+
+    if (user) {
+      // Create user object (without password)
       const userData = {
-        id: Date.now(),
-        email: email,
-        name: email.split('@')[0] // Use part before @ as name
+        id: user.id,
+        email: user.email,
+        name: user.name,
       };
       
       onLogin(userData);
       navigate('/dashboard');
     } else {
-      setError('Please enter email and password');
+      setError('Invalid email or password. Try: ashen@example.com / 123456');
     }
+    
+    setIsLoading(false);
   };
 
   return (
@@ -36,7 +52,7 @@ function Login({ onLogin }) {
         <h1>Welcome Back</h1>
         <p>Sign in to your account</p>
 
-        {error && <p className="error-message">{error}</p>}
+        {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleLogin}>
           <div className="input-group">
@@ -61,7 +77,9 @@ function Login({ onLogin }) {
             />
           </div>
 
-          <button type="submit" className="btn-primary">Sign In</button>
+          <button type="submit" className="btn-primary" disabled={isLoading}>
+            {isLoading ? 'Signing in...' : 'Sign In'}
+          </button>
         </form>
 
         <div className="divider">Or continue with</div>
@@ -73,6 +91,10 @@ function Login({ onLogin }) {
 
         <p className="signup-link">
           Don't have an account? <a href="#">Sign up</a>
+        </p>
+        
+        <p className="demo-hint">
+          Demo accounts: ashen@example.com / 123456
         </p>
       </div>
     </div>
