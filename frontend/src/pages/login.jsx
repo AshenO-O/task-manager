@@ -1,15 +1,9 @@
-// Login.jsx - Login page with demo authentication
-// For now, we use demo accounts. Later we'll add real backend auth.
+// Login.jsx - Real authentication with backend
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { authApi } from '../services/api';
 import './Login.css';
-
-// Demo users 
-const DEMO_USERS = [
-  { id: "1", email: "ashen@example.com", password: "123456", name: "Ashen" },
-  { id: "2", email: "demo@example.com", password: "123456", name: "Demo User" },
-];
 
 function Login({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -23,27 +17,20 @@ function Login({ onLogin }) {
     setIsLoading(true);
     setError('');
 
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    // Find user in demo list
-    const user = DEMO_USERS.find(u => u.email === email && u.password === password);
-
-    if (user) {
-      // Create user object (without password)
+    try {
+      const response = await authApi.login({ email, password });
       const userData = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
+        id: response.data.id,
+        email: response.data.email,
+        name: response.data.name,
       };
-      
       onLogin(userData);
       navigate('/dashboard');
-    } else {
-      setError('Invalid email or password. Try: ashen@example.com / 123456');
+    } catch (error) {
+      setError(error.response?.data || 'Login failed. Check your credentials.');
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
@@ -82,19 +69,11 @@ function Login({ onLogin }) {
           </button>
         </form>
 
-        <div className="divider">Or continue with</div>
-
-        <div className="social-buttons">
-          <button className="btn-social">Google</button>
-          <button className="btn-social">GitHub</button>
-        </div>
+        <div className="divider">Or</div>
 
         <p className="signup-link">
-          Don't have an account? <a href="#">Sign up</a>
-        </p>
-        
-        <p className="demo-hint">
-          Demo accounts: ashen@example.com / 123456
+          Don't have an account?{' '}
+          <Link to="/signup">Sign up</Link>
         </p>
       </div>
     </div>

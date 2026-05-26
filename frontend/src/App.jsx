@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import Login from './pages/login';
+import Signup from './pages/Signup';
 import Dashboard from './pages/dashboard';
 import Settings from './pages/settings';
 import './App.css';
@@ -70,6 +71,12 @@ function App() {
               <Navigate to="/dashboard" /> : 
               <Login onLogin={handleLogin} />
             } 
+          />
+
+          {/* Signup route - if already logged in, go to dashboard */}
+          <Route 
+            path="/signup"
+            element={<Signup />}
           />
           
           {/* Dashboard route */}

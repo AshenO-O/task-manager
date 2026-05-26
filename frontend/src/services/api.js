@@ -9,6 +9,15 @@ const api = axios.create({
   },
 });
 
+// Auth API calls
+export const authApi = {
+  // Signup - Create new account
+  signup: (userData) => api.post('/auth/signup', userData),
+  
+  // Login - Authenticate user
+  login: (credentials) => api.post('/auth/login', credentials),
+};
+
 // Task API calls
 export const taskApi = {
   // Get all tasks for a user
