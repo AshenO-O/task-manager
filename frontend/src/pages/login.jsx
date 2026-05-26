@@ -1,4 +1,4 @@
-// Login.jsx - Real authentication with backend
+// Login.jsx - JWT Authentication
 
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -18,13 +18,22 @@ function Login({ onLogin }) {
     setError('');
 
     try {
+      // 1. Login to get token
       const response = await authApi.login({ email, password });
-      const userData = {
-        id: response.data.id,
-        email: response.data.email,
-        name: response.data.name,
-      };
+      const token = response.data.token;
+      
+      // 2. Save token to localStorage
+      localStorage.setItem('token', token);
+      
+      // 3. Get user info using the token
+      const userResponse = await authApi.getCurrentUser();
+      const userData = userResponse.data;
+      
+      // 4. Save user info and notify App
+      localStorage.setItem('user', JSON.stringify(userData));
       onLogin(userData);
+      
+      // 5. Go to dashboard
       navigate('/dashboard');
     } catch (error) {
       setError(error.response?.data || 'Login failed. Check your credentials.');

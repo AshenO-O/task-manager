@@ -20,7 +20,7 @@ function Dashboard({ user }) {
 
   // This runs when the component loads or when user changes
   useEffect(() => {
-    if (user && user.id) {
+    if (user && user.id) {  
       loadTasks();
     }
   }, [user]);
@@ -29,11 +29,10 @@ function Dashboard({ user }) {
   const loadTasks = async () => {
     setIsLoading(true);
     try {
-      const response = await taskApi.getTasks(user.id);
+      const response = await taskApi.getTasks();
       setTasks(response.data);
     } catch (error) {
       console.error('Error loading tasks:', error);
-      alert('Failed to load tasks. Make sure backend is running on port 8080');
     } finally {
       setIsLoading(false);
     }
@@ -64,7 +63,6 @@ function Dashboard({ user }) {
       completed: false,
       priority: priority,
       dueDate: dueDate || new Date().toISOString().split('T')[0],
-      userId: user.id,  // Link task to current user
     };
     
     try {

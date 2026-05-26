@@ -40,6 +40,8 @@ function Settings({ user, theme: initialTheme = 'light', onThemeChange, onLogout
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');  
     if (onLogout) {
       onLogout();
     }

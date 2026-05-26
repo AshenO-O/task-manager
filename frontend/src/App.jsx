@@ -5,6 +5,7 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/dashboard';
 import Settings from './pages/settings';
 import './App.css';
+import { authApi } from './services/api';
 
 function App() {
   // Track if user is logged in
@@ -26,6 +27,27 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+
+    const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+
+      if (token && storedUser) {
+        authApi.getCurrentUser()
+          .then(response => {
+            setUser(response.data);
+            setIsAuthenticated(true);
+          })
+          .catch(error => {
+            console.error('Error validating token:', error);
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            setIsAuthenticated(false);
+          });
+      }
+  }, []);
+
+  // Apply theme to document root and save to localStorage
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem('theme', theme);
