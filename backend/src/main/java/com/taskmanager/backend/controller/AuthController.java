@@ -3,6 +3,8 @@ package com.taskmanager.backend.controller;
 import com.taskmanager.backend.dto.AuthResponse;
 import com.taskmanager.backend.dto.LoginRequest;
 import com.taskmanager.backend.dto.SignupRequest;
+import com.taskmanager.backend.dto.ChangePasswordRequest;
+import com.taskmanager.backend.dto.UpdateProfileRequest;
 import com.taskmanager.backend.model.User;
 import com.taskmanager.backend.service.AuthService;
 import com.taskmanager.backend.service.JwtService;
@@ -68,6 +70,40 @@ public class AuthController {
             return ResponseEntity.ok(new UserResponse(userId, email, name));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+    }
+
+    // PUT /api/auth/change-password - Change current user's password
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String authHeader,
+                                            @RequestBody ChangePasswordRequest request) {
+        try {
+            String token = authHeader.substring(7);
+            String userId = jwtService.extractUserId(token);
+            authService.changePassword(userId, request);
+            return ResponseEntity.ok("Password updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // PUT /api/auth/profile - Update current user's profile (name, email)
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String authHeader,
+                                           @RequestBody UpdateProfileRequest request) {
+        try {
+            String token = authHeader.substring(7);
+            String userId = jwtService.extractUserId(token);
+            User updated = authService.updateProfile(userId, request);
+            AuthResponse response = new AuthResponse(
+                updated.getId(),
+                updated.getName(),
+                updated.getEmail(),
+                "Profile updated successfully"
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authApi } from '../services/api';
 import './settings.css';
 
 function Settings({ user, theme: initialTheme = 'light', onThemeChange, onLogout }) {
@@ -9,6 +10,13 @@ function Settings({ user, theme: initialTheme = 'light', onThemeChange, onLogout
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [profileMessage, setProfileMessage] = useState('');
+  const [profileError, setProfileError] = useState('');
 
   const [theme, setTheme] = useState(initialTheme);
   const navigate = useNavigate();
@@ -19,29 +27,53 @@ function Settings({ user, theme: initialTheme = 'light', onThemeChange, onLogout
 
   const handleProfileUpdate = (e) => {
     e.preventDefault();
-    alert('Profile updated successfully! (Demo)');
+    setProfileError('');
+    setProfileMessage('');
+
+    authApi.updateProfile({ name: fullName, email: email })
+      .then((res) => {
+        setProfileMessage(res.data.message || 'Profile updated successfully');
+        // Update localStorage user data
+        const updated = { id: res.data.id, name: res.data.name, email: res.data.email };
+        localStorage.setItem('user', JSON.stringify(updated));
+      })
+      .catch((err) => {
+        setProfileError(err.response?.data || 'Failed to update profile');
+      });
   };
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = async (e) => {
     e.preventDefault();
+    setPasswordError('');
+    setPasswordMessage('');
+
     if (newPassword !== confirmPassword) {
-      alert('Confirm password do not match!');
+      setPasswordError('Confirm password does not match');
       return;
     }
     if (newPassword.length < 6) {
-      alert('New password must be at least 6 characters long!');
+      setPasswordError('New password must be at least 6 characters long');
       return;
     }
 
-    alert('Password changed successfully!');
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
+    try {
+      await authApi.changePassword({
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      });
+      setPasswordMessage('Password changed successfully!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      setPasswordError(error.response?.data || 'Failed to change password');
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('user');  
+    localStorage.removeItem('user');
     if (onLogout) {
       onLogout();
     }
@@ -88,6 +120,8 @@ function Settings({ user, theme: initialTheme = 'light', onThemeChange, onLogout
           <button type="submit" className="btn-primary">
             Save Changes
           </button>
+          {profileError && <div className="error-message">{profileError}</div>}
+          {profileMessage && <div className="success-message">{profileMessage}</div>}
         </form>
       </div>
 
@@ -98,36 +132,66 @@ function Settings({ user, theme: initialTheme = 'light', onThemeChange, onLogout
         <form onSubmit={handlePasswordChange}>
           <div className="input-group">
             <label>Current Password</label>
-            <input
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="Enter current password"
-              required
-            />
+            <div className="password-field">
+              <input
+                type={showCurrentPassword ? 'text' : 'password'}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Enter current password"
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowCurrentPassword((prev) => !prev)}
+              >
+                {showCurrentPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
           </div>
 
           <div className="input-group">
             <label>New Password</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Enter new password"
-              required
-            />
+            <div className="password-field">
+              <input
+                type={showNewPassword ? 'text' : 'password'}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowNewPassword((prev) => !prev)}
+              >
+                {showNewPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
           </div>
 
           <div className="input-group">
             <label>Confirm New Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm new password"
-              required
-            />
+            <div className="password-field">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+              >
+                {showConfirmPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
           </div>
+
+          {passwordError && <div className="error-message">{passwordError}</div>}
+          {passwordMessage && <div className="success-message">{passwordMessage}</div>}
 
           <button type="submit" className="btn-primary">
             Change Password
@@ -174,11 +238,10 @@ function Settings({ user, theme: initialTheme = 'light', onThemeChange, onLogout
         </p>
       </div>
 
-      {/* Logout Section */}
       <div className="settings-section logout-section">
         <h2>Session</h2>
         <p className="section-desc">Sign out of your account</p>
-        
+
         <button onClick={handleLogout} className="logout-btn">
           Logout
         </button>
