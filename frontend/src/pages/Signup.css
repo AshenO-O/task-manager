@@ -64,3 +64,33 @@
 .login-link a:hover {
   text-decoration: underline;
 }
+
+.input-group {
+  margin-bottom: 1rem;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 5.5rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.password-toggle:hover {
+  text-decoration: underline;
+}

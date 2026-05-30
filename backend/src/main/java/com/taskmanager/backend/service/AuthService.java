@@ -24,15 +24,17 @@ public class AuthService {
     
     // Signup new user
     public User signup(SignupRequest request) throws Exception {
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+        
         // Check if email already exists
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(normalizedEmail)) {
             throw new Exception("Email already in use");
         }
         
         // Create new user with ENCRYPTED password
         User user = new User();
         user.setName(request.getName());
-        user.setEmail(request.getEmail());
+        user.setEmail(normalizedEmail);
         user.setPassword(passwordEncoder.encode(request.getPassword())); // BCrypt hash!
         user.setCreatedAt(DateTimeFormatter.ISO_INSTANT.format(Instant.now()));
         
@@ -41,8 +43,10 @@ public class AuthService {
     
     // Login user - returns JWT token instead of user object
     public String login(LoginRequest request) throws Exception {
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+        
         // Find user by email
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(normalizedEmail)
             .orElseThrow(() -> new Exception("Invalid email or password"));
         
         // Check password using BCrypt
@@ -54,7 +58,7 @@ public class AuthService {
         return jwtService.generateToken(user.getId(), user.getEmail(), user.getName());
     }
     
-    // Get user by ID (without password)
+    // Get user by ID )
     public User getUserById(String id) throws Exception {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new Exception("User not found"));
