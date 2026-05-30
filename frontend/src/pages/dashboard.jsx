@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { taskApi } from '../services/api';
-import './Dashboard.css';
+import './dashboard.css';
 
 function Dashboard({ user }) {
   // State for all tasks
