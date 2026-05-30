@@ -1,16 +1,7 @@
 import axios from 'axios';
 
-// Dynamically determine API URL based on environment
-const getApiUrl = () => {
-  // In Docker, use relative path (nginx handles proxy)
-  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return '/api';  // Production - nginx proxies to backend
-  }
-  // Local development
-  return 'http://localhost:8080/api';
-};
-
-const API_BASE_URL = getApiUrl();
+// use relative path - nginx will proxy to backend
+const API_BASE_URL = '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
